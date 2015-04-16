@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/Wildhoney/L.Pather/issues"
   },
-  "homepage": "https://github.com/Wildhoney/L.Pather"
+  "homepage": "https://github.com/Wildhoney/L.Pather",
+  "devDependencies": {
+    "express": "^4.12.3"
+  }
 }
