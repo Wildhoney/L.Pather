@@ -43,6 +43,7 @@
         createPath: function createPath(latLngs) {
 
             return new L.Pather.Polyline({
+                latLngs: latLngs,
                 tolerance: this.options.tolerance
             });
 
