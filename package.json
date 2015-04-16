@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/Wildhoney/L.Pather",
   "devDependencies": {
+    "bower": "^1.4.1",
     "express": "^4.12.3",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.5.2",
