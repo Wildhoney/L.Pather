@@ -11,5 +11,16 @@ before_script:
 script:
   - npm install
   - bower install
-  - grunt build
-  - grunt test
+  - gulp build
+  - gulp test
+
+deploy:
+  provider: heroku
+  strategy: api
+  all_branches: true
+  skip_cleanup: true
+  api_key:
+    secure: OnS0tW8UhFFlNTYcVHRCWCNpNegSiOwWMNRLGT7utP4PMRJ+1UFBUbNmAcmDeOLr6MZgHUAVJi9b9NN/+d+rj6cWcUD5OqO45lMAB1dAOWk1Hj1d/+79qWez7Iop2GKzJEq34mmBGTqalT3cKUae/DepKcsP1pN/kduFnqoJUAc=
+  app: pather
+  on:
+    repo: Wildhoney/L.Pather
