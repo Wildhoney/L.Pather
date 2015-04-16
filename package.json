@@ -1,5 +1,5 @@
 {
-  "name": "pather",
+  "name": "leaflet-pather",
   "version": "0.1.0",
   "description": "Branching from Leaflet.FreeDraw, L.Pather is a freehand polyline creator that simplifies the polyline for mutability.",
   "main": "dist/pather.min.js",
