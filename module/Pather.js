@@ -35,6 +35,34 @@
         },
 
         /**
+         * @method createPath
+         * @param {L.LatLng[]} latLngs
+         * @return {L.Pather.Polyline}
+         */
+        createPath: function createPath(latLngs) {
+
+            return new L.Pather.Polyline({
+                tolerance: this.options.tolerance
+            });
+
+        },
+
+        /**
+         * @method removePath
+         * @param {L.Pather.Polyline} model
+         * @return {Boolean}
+         */
+        removePath: function removePath(model) {
+
+            if (model instanceof L.Pather.Polyline) {
+                return model.remove();
+            }
+
+            return false;
+
+        },
+
+        /**
          * @method onAdd
          * @param {L.Map} map
          * @return {void}
@@ -44,6 +72,20 @@
         }
 
     });
+
+    /**
+     * @constant L.Pather.MODE
+     * @type {Object}
+     */
+    L.Pather.MODE = {
+        VIEW:        1,
+        CREATE:      2,
+        EDIT:        4,
+        DELETE:      8,
+        APPEND:      16,
+        EDIT_APPEND: 4 | 16,
+        ALL:         1 | 2 | 4 | 8 | 16
+    };
 
     // Simple factory that Leaflet loves to bundle.
     L.pather = function pather(options) {

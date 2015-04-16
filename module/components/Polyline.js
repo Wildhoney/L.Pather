@@ -20,6 +20,30 @@
     L.Pather.Polyline.prototype = {
 
         /**
+         * @method select
+         * @return {void}
+         */
+        select: function select() {
+
+        },
+
+        /**
+         * @method deselect
+         * @return {void}
+         */
+        deselect: function deselect() {
+
+        },
+
+        /**
+         * @method attachElbows
+         * @return {void}
+         */
+        attachElbows: function attachElbows() {
+
+        },
+
+        /**
          * @method defaultOptions
          * @return {Object}
          */
