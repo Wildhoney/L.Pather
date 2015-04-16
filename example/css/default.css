@@ -10,6 +10,7 @@ section.map {
     left: 0;
     width: 100%;
     height: 100%;
+    cursor: crosshair;
 }
 
 h1 {
@@ -52,4 +53,10 @@ a.fork {
 
 a.fork i {
     padding-right: 3px;
+}
+
+svg {
+    border: 1px solid red;
+    position: absolute;
+    z-index: 1001;
 }
