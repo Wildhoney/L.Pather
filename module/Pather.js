@@ -69,6 +69,14 @@
          */
         onAdd: function onAdd(map) {
             return void map;
+        },
+
+        /**
+         * @method clearAll
+         * @return {void}
+         */
+        clearAll: function clearAll() {
+            d3.select('svg').text('');
         }
 
     });
