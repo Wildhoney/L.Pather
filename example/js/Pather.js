@@ -7,7 +7,7 @@
     $document.addEventListener('DOMContentLoaded', function DOMContentLoaded() {
 
         var element = $document.querySelector('section.map'),
-            map     = new L.Map(element).setView([51.505, -0.09], 13);
+            map     = new L.Map(element).setView([51.505, -0.09], 15);
 
         L.tileLayer('https://a.tiles.mapbox.com/v4/examples.ra3sdcxr/{z}/{x}/{y}@2x.png?access_token=' + ACCESS_TOKEN, {
             maxZoom: 18

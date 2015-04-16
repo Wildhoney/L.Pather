@@ -29,5 +29,8 @@
   "dependencies": {
     "leaflet": ">0.7.0",
     "d3": "~3.5.5"
+  },
+  "devDependencies": {
+    "font-awesome": "~4.3.0"
   }
 }
