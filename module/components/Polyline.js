@@ -1,4 +1,6 @@
-(function main($window) {
+(function main() {
+
+    "use strict";
 
     /**
      * @module Pather
@@ -41,4 +43,4 @@
         
     };
 
-})(window);
+})();
