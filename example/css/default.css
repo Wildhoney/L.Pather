@@ -13,6 +13,39 @@ section.map {
     cursor: crosshair;
 }
 
+section.map div.elbow {
+    border: 2px solid white;
+    background-color: orangered;
+    cursor: move;
+    outline: none;
+    box-shadow: 0 0 3px rgba(0, 0, 0, .1);
+    border-radius: 50%;
+}
+
+input.smooth-factor {
+    position: absolute;
+    z-index: 3;
+    top: 90px;
+    border-radius: 3px;
+    width: 200px;
+    left: 10px;
+    -webkit-appearance: none;
+    background-color: white;
+    height: 3px;
+    outline: none;
+}
+
+input.smooth-factor::-webkit-slider-thumb {
+    box-shadow: 0 0 5px rgba(0, 0, 0, .15);
+    -webkit-appearance: none;
+    width: 15px;
+    background-color: #555;
+    border: 2px solid white;
+    cursor: move;
+    border-radius: 50%;
+    height: 15px;
+}
+
 h1 {
     position: absolute;
     top: 20px;

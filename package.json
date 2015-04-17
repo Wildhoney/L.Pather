@@ -1,6 +1,6 @@
 {
   "name": "leaflet-pather",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Branching from Leaflet.FreeDraw, L.Pather is a freehand polyline creator that simplifies the polyline for mutability.",
   "main": "dist/pather.min.js",
   "directories": {
@@ -40,7 +40,10 @@
     "gulp-karma": "0.0.4",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.2.0",
+    "jasmine-core": "^2.2.0",
     "jshint-stylish": "^1.0.1",
-    "karma": "^0.12.31"
+    "karma": "^0.12.31",
+    "karma-firefox-launcher": "^0.1.4",
+    "karma-jasmine": "^0.3.5"
   }
 }

@@ -13,9 +13,26 @@
             maxZoom: 18
         }).addTo(map);
 
-        map.addLayer(new L.Pather({
+        var rangeElement = document.querySelector('input.smooth-factor');
+
+        rangeElement.addEventListener('change', function change() {
+            pather.setSmoothFactor(this.value / 10);
+        });
+
+        var pather = new L.Pather({
+            smoothFactor: rangeElement.value / 10,
             mode: L.Pather.MODE.CREATE | L.Pather.MODE.EDIT
-        }));
+        });
+
+        map.addLayer(pather);
+
+        //setTimeout(function() {
+        //    pather.setSmoothFactor(100);
+        //}, 3000);
+        //
+        //setTimeout(function() {
+        //    pather.setSmoothFactor(.1);
+        //}, 6000);
 
     });
 

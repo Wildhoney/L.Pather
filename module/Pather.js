@@ -19,6 +19,20 @@
     }
 
     /**
+     * @constant MODES
+     * @type {{VIEW: number, CREATE: number, EDIT: number, DELETE: number, APPEND: number, EDIT_APPEND: number, ALL: number}}
+     */
+    var MODES = {
+        VIEW:        1,
+        CREATE:      2,
+        EDIT:        4,
+        DELETE:      8,
+        APPEND:      16,
+        EDIT_APPEND: 4 | 16,
+        ALL:         1 | 2 | 4 | 8 | 16
+    };
+
+    /**
      * @module Pather
      * @author Adam Timberlake
      * @link https://github.com/Wildhoney/L.Pather
@@ -31,21 +45,26 @@
          * @return {void}
          */
         initialize: function initialize(options) {
-            this.options  = options || this.defaultOptions();
-            this.creating = false;
+            this.options   = Object.assign(this.defaultOptions(), options || {});
+            this.creating  = false;
+            this.polylines = [];
         },
 
         /**
          * @method createPath
          * @param {L.LatLng[]} latLngs
-         * @return {L.Pather.Polyline}
+         * @return {L.Pather.Polyline|Boolean}
          */
         createPath: function createPath(latLngs) {
 
-            return new L.Pather.Polyline({
-                latLngs: latLngs,
-                tolerance: this.options.tolerance
-            });
+            if (latLngs.length <= 1) {
+                return false;
+            }
+
+            this.clearAll();
+            var polyline = new L.Pather.Polyline(this.map, latLngs, this.options);
+            this.polylines.push(polyline);
+            return polyline;
 
         },
 
@@ -57,7 +76,11 @@
         removePath: function removePath(model) {
 
             if (model instanceof L.Pather.Polyline) {
+
+                var indexOf = this.polylines.indexOf(model);
+                this.polylines.splice(indexOf, 1);
                 return model.remove();
+
             }
 
             return false;
@@ -74,6 +97,7 @@
             map.dragging.disable();
 
             var element    = this.options.element || map._container;
+            this.map       = map;
             this.fromPoint = { x: 0, y: 0 };
             this.svg       = d3.select(element)
                                .append('svg')
@@ -94,16 +118,72 @@
          */
         attachEvents: function attachEvents(map) {
 
+            /**
+             * @property polylines
+             * @type {L.Pather.Polyline[]}
+             */
+            var polylines = this.polylines;
+
+            /**
+             * @property mode
+             * @type {Number}
+             */
+            var mode = this.options.mode;
+
+            /**
+             * @method manipulatingEdges
+             * @return {Object}
+             */
+            function manipulatingEdges() {
+
+                return polylines.filter(function filter(polyline) {
+                    return polyline.manipulating;
+                });
+
+            }
+
+            /**
+             * @method hasCreatePermission
+             * @return {Boolean}
+             */
+            function hasCreatePermission() {
+                return !!(mode & MODES.CREATE);
+            }
+
             map.on('mousedown', function mousedown(event) {
-                this.creating  = true;
-                this.fromPoint = map.latLngToContainerPoint(event.latlng);
+
+                if (hasCreatePermission() && manipulatingEdges().length === 0) {
+
+                    this.creating  = true;
+                    this.fromPoint = map.latLngToContainerPoint(event.latlng);
+                    this.latLngs   = [];
+
+                }
+
             }.bind(this));
 
             map.on('mouseup', function mouseup() {
-                this.creating = false;
+
+                if (manipulatingEdges().length === 0) {
+
+                    this.creating = false;
+                    this.createPath(this.convertPointsToLatLngs(this.latLngs));
+                    this.latLngs  = [];
+                    return;
+
+                }
+
+                manipulatingEdges()[0].attachElbows();
+                manipulatingEdges()[0].manipulating = false;
+
             }.bind(this));
 
             map.on('mousemove', function mousemove(event) {
+
+                if (manipulatingEdges().length > 0) {
+                    manipulatingEdges()[0].moveTo(event.layerPoint);
+                    return;
+                }
 
                 var lineFunction = d3.svg.line()
                                      .x(function x(d) { return d.x; })
@@ -114,6 +194,8 @@
 
                     var point    = map.mouseEventToContainerPoint(event.originalEvent),
                         lineData = [this.fromPoint, new L.Point(point.x, point.y, false)];
+
+                    this.latLngs.push(point);
 
                     this.svg.append('path')
                             .classed(this.getOption('lineClass'), true)
@@ -131,11 +213,24 @@
         },
 
         /**
+         * @method convertPointsToLatLngs
+         * @param {Point[]} points
+         * @return {LatLng[]}
+         */
+        convertPointsToLatLngs: function convertPointsToLatLngs(points) {
+
+            return points.map(function map(point) {
+                return this.map.containerPointToLatLng(point);
+            }.bind(this));
+
+        },
+
+        /**
          * @method clearAll
          * @return {void}
          */
         clearAll: function clearAll() {
-            d3.select('svg').text('');
+            this.svg.text('');
         },
 
         /**
@@ -155,12 +250,31 @@
 
             return {
                 moduleClass: 'pather',
-                strokeColour: '#D7217E',
-                strokeWidth: 2,
                 lineClass: 'drawing-line',
+                elbowClass: 'elbow',
+                strokeColour: 'rgba(0,0,0,.5)',
+                strokeWidth: 2,
                 width: '100%',
-                height: '100%'
+                height: '100%',
+                smoothFactor: 10,
+                pathColour: 'black',
+                pathOpacity: 0.55,
+                pathWidth: 3,
+                mode: MODES.ALL
             };
+
+        },
+
+        /**
+         * @method setSmoothFactor
+         * @param {Number} smoothFactor
+         * @return {void}
+         */
+        setSmoothFactor: function setSmoothFactor(smoothFactor) {
+
+            this.polylines.forEach(function forEach(polyline) {
+                polyline.setSmoothFactor(smoothFactor);
+            });
 
         }
 
@@ -170,15 +284,7 @@
      * @constant L.Pather.MODE
      * @type {Object}
      */
-    L.Pather.MODE = {
-        VIEW:        1,
-        CREATE:      2,
-        EDIT:        4,
-        DELETE:      8,
-        APPEND:      16,
-        EDIT_APPEND: 4 | 16,
-        ALL:         1 | 2 | 4 | 8 | 16
-    };
+    L.Pather.MODE = MODES;
 
     // Simple factory that Leaflet loves to bundle.
     L.pather = function pather(options) {
