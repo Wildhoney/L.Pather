@@ -56,7 +56,6 @@ a.fork i {
 }
 
 svg {
-    border: 1px solid red;
     position: absolute;
     z-index: 1001;
 }
