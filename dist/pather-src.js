@@ -120,36 +120,24 @@
         attachEvents: function attachEvents(map) {
 
             /**
-             * @property polylines
-             * @type {L.Pather.Polyline[]}
-             */
-            var polylines = this.polylines;
-
-            /**
-             * @property mode
-             * @type {Number}
-             */
-            var mode = this.options.mode;
-
-            /**
              * @method manipulatingEdges
              * @return {Object}
              */
-            function manipulatingEdges() {
+            var manipulatingEdges = function manipulatingEdges() {
 
-                return polylines.filter(function filter(polyline) {
+                return this.polylines.filter(function filter(polyline) {
                     return polyline.manipulating;
                 });
 
-            }
+            }.bind(this);
 
             /**
              * @method hasCreatePermission
              * @return {Boolean}
              */
-            function hasCreatePermission() {
-                return !!(mode & MODES.CREATE);
-            }
+            var hasCreatePermission = function hasCreatePermission() {
+                return !!(this.options.mode & MODES.CREATE);
+            }.bind(this);
 
             map.on('mousedown', function mousedown(event) {
 
@@ -280,6 +268,31 @@
                 polyline.setSmoothFactor(smoothFactor);
             });
 
+        },
+
+        /**
+         * @method setMode
+         * @param {Number} mode
+         * @return {void}
+         */
+        setMode: function setMode(mode) {
+
+            this.options.mode = mode;
+
+            if (this.options.mode & MODES.CREATE) {
+                return void this.map.dragging.disable();
+            }
+
+            this.map.dragging.enable();
+
+        },
+
+        /**
+         * @method getMode
+         * @return {Number}
+         */
+        getMode: function getMode() {
+            return this.options.mode;
         }
 
     });

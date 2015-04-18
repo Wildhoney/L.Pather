@@ -33,7 +33,7 @@ h2 {
     font-size: 10px;
     font-weight: normal;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, .1);
-    background-color: rgba(0, 0, 0, .65);
+    background-color: #555;
 }
 
 input.smooth-factor {
@@ -58,6 +58,20 @@ input.smooth-factor::-webkit-slider-thumb {
     cursor: move;
     border-radius: 50%;
     height: 15px;
+}
+
+button.draw-polyline {
+    position: absolute;
+    width: 200px;
+    z-index: 4;
+    background-color: white;
+    border: 0;
+    left: 10px;
+    padding: 8px;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .15);
+    top: 120px;
 }
 
 h1 {

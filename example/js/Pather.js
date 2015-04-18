@@ -13,10 +13,23 @@
             maxZoom: 18
         }).addTo(map);
 
-        var rangeElement = $document.querySelector('input.smooth-factor');
+        var rangeElement  = $document.querySelector('input.smooth-factor'),
+            buttonElement = $document.querySelector('button.draw-polyline');
 
         rangeElement.addEventListener('change', function change() {
             pather.setSmoothFactor(this.value / 10);
+        });
+
+        buttonElement.addEventListener('click', function click() {
+
+            if (pather.getMode() & L.Pather.MODE.CREATE) {
+                buttonElement.innerHTML = 'Start Drawing';
+                return void pather.setMode(pather.getMode() ^ L.Pather.MODE.CREATE);
+            }
+
+            pather.setMode(pather.getMode() | L.Pather.MODE.CREATE);
+            buttonElement.innerHTML = 'Stop Drawing';
+
         });
 
         var pather = new L.Pather({
