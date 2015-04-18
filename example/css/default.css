@@ -22,15 +22,29 @@ section.map div.elbow {
     border-radius: 50%;
 }
 
+h2 {
+    position: absolute;
+    top: 84px;
+    left: 10px;
+    padding: 2px 5px;
+    z-index: 3;
+    font-family: Lato, Arial, Tahoma, Helvetia, sans-serif;
+    color: white;
+    font-size: 10px;
+    font-weight: normal;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, .1);
+    background-color: rgba(0, 0, 0, .65);
+}
+
 input.smooth-factor {
     position: absolute;
     z-index: 3;
-    top: 90px;
-    border-radius: 3px;
+    top: 100px;
+    border-radius: 5px;
     width: 200px;
     left: 10px;
     -webkit-appearance: none;
-    background-color: white;
+    background-color: #555;
     height: 3px;
     outline: none;
 }
@@ -39,8 +53,8 @@ input.smooth-factor::-webkit-slider-thumb {
     box-shadow: 0 0 5px rgba(0, 0, 0, .15);
     -webkit-appearance: none;
     width: 15px;
-    background-color: #555;
-    border: 2px solid white;
+    background-color: white;
+    border: 2px solid #555;
     cursor: move;
     border-radius: 50%;
     height: 15px;

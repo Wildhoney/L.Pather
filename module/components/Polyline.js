@@ -14,10 +14,11 @@
      * @param {L.Map} map
      * @param {L.LatLng[]} latLngs
      * @param {Object} [options={}]
+     * @param {Function} [fire=function() {}]
      * @return {Polyline}
      * @constructor
      */
-    L.Pather.Polyline = function Polyline(map, latLngs, options) {
+    L.Pather.Polyline = function Polyline(map, latLngs, options, fire) {
 
         this.options = {
             color:        options.pathColour,
@@ -29,11 +30,17 @@
 
         this.polyline     = new L.Polyline(latLngs, this.options).addTo(map);
         this.map          = map;
+        this.fire         = fire || function noop() {};
         this.edges        = [];
         this.manipulating = false;
 
         this.attachPolylineEvents(this.polyline);
         this.select();
+
+        this.fire('created', {
+            polyline: this,
+            latLngs: this.getLatLngs()
+        });
 
     };
 
@@ -107,8 +114,8 @@
                 event.originalEvent.stopPropagation();
                 event.originalEvent.preventDefault();
 
-                //var newPoint = this.map.mouseEventToContainerPoint(event.originalEvent);
-                //this.insertElbow(newPoint);
+                //var latLng = this.map.mouseEventToLatLng(event.originalEvent);
+                //this.insertElbow(latLng);
 
             }.bind(this));
 
@@ -141,63 +148,38 @@
 
         /**
          * @method insertElbow
-         * @param {L.Point} newPoint
+         * @param {L.LatLng} latLng
          * @return {void}
          */
-        insertElbow: function insertElbow(newPoint) {
+        insertElbow: function insertElbow(latLng) {
 
-            var lowestDistance = Infinity,
-                startPoint     = new L.Point(),
-                endPoint       = new L.Point(),
-                latLngs        = [];
+            var newPoint      = this.map.latLngToContainerPoint(latLng),
+                leastDistance = Infinity,
+                insertAt      = -1;
 
-            this.edges.forEach(function forEach(edge, index) {
+            this.polyline._latlngs.forEach(function forEach(currentLatLng, index) {
 
-                var firstPoint  = edge[DATA_ATTRIBUTE].point,
-                    secondPoint = this.edges[index + 1] || null;
-
-                if (secondPoint === null) {
+                if (!this.polyline._latlngs[index]) {
                     return;
                 }
 
-                secondPoint  = secondPoint[DATA_ATTRIBUTE].point;
-                var distance = L.LineUtil.pointToSegmentDistance(newPoint, firstPoint, secondPoint);
+                var firstPoint  = this.map.latLngToContainerPoint(currentLatLng),
+                    secondPoint = this.map.latLngToContainerPoint(this.polyline._latlngs[index]),
+                    distance    = L.LineUtil.pointToSegmentDistance(newPoint, firstPoint, secondPoint);
 
-                if (distance < lowestDistance) {
-
-                    // We discovered a distance that possibly should contain the new point!
-                    lowestDistance = distance;
-                    startPoint     = firstPoint;
-                    endPoint       = secondPoint;
-
+                if (distance < leastDistance) {
+                    leastDistance = distance;
+                    insertAt      = index;
                 }
 
             }.bind(this));
 
-            this.edges.forEach(function forEach(edge, index) {
-
-                var nextPoint = this.edges[index + 1] || null,
-                    point     = edge[DATA_ATTRIBUTE].point;
-
-                if (nextPoint === null) {
-                    return;
-                }
-
-                nextPoint = nextPoint[DATA_ATTRIBUTE].point;
-
-                if (point === startPoint && nextPoint === endPoint) {
-
-                    latLngs.push(this.map.containerPointToLatLng(point));
-                    latLngs.push(this.map.containerPointToLatLng(newPoint));
-                    return;
-
-                }
-
-                latLngs.push(this.map.containerPointToLatLng(point));
-
-            }.bind(this));
+            var latLngs = this.polyline.getLatLngs();
+            latLngs.splice(insertAt, 0, latLng);
+            this.polyline.setLatLngs(latLngs);
 
             this.redraw(this.latLngsToEdges(latLngs));
+            this.attachElbows();
 
         },
 
@@ -211,6 +193,19 @@
             var latLng = this.map.layerPointToLatLng(point);
             this.manipulating.setLatLng(latLng);
             this.redraw(this.edges);
+
+        },
+
+        /**
+         * @method finished
+         * @return {void}
+         */
+        finished: function finished() {
+
+            this.fire('edited', {
+                polyline: this,
+                latLngs: this.getLatLngs()
+            });
 
         },
 
@@ -266,6 +261,14 @@
                 return { _latlng: latLng };
             });
 
+        },
+
+        /**
+         * @method getLatLngs
+         * @return {LatLng[]}
+         */
+        getLatLngs: function getLatLngs() {
+            return this.polyline._latlngs;
         },
 
         /**

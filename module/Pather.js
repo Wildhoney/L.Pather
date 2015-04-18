@@ -62,7 +62,8 @@
             }
 
             this.clearAll();
-            var polyline = new L.Pather.Polyline(this.map, latLngs, this.options);
+
+            var polyline = new L.Pather.Polyline(this.map, latLngs, this.options, this.fire.bind(this));
             this.polylines.push(polyline);
             return polyline;
 
@@ -174,6 +175,7 @@
                 }
 
                 manipulatingEdges()[0].attachElbows();
+                manipulatingEdges()[0].finished();
                 manipulatingEdges()[0].manipulating = false;
 
             }.bind(this));
@@ -271,6 +273,8 @@
          * @return {void}
          */
         setSmoothFactor: function setSmoothFactor(smoothFactor) {
+
+            this.options.smoothFactor = parseInt(smoothFactor);
 
             this.polylines.forEach(function forEach(polyline) {
                 polyline.setSmoothFactor(smoothFactor);

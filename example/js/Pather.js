@@ -13,7 +13,7 @@
             maxZoom: 18
         }).addTo(map);
 
-        var rangeElement = document.querySelector('input.smooth-factor');
+        var rangeElement = $document.querySelector('input.smooth-factor');
 
         rangeElement.addEventListener('change', function change() {
             pather.setSmoothFactor(this.value / 10);
@@ -26,13 +26,16 @@
 
         map.addLayer(pather);
 
-        //setTimeout(function() {
-        //    pather.setSmoothFactor(100);
-        //}, 3000);
-        //
-        //setTimeout(function() {
-        //    pather.setSmoothFactor(.1);
-        //}, 6000);
+        function consoleLog(type, event) {
+
+            console.log('%c ' + type + ': %c ' + event.latLngs.map(function(latLng) {
+                return [latLng.lat, latLng.lng];
+            }).join(', '), 'border-radius: 3px; color: white; background-color: lightseagreen', 'font-size: 10px; color: black');
+
+        }
+
+        pather.on('created', consoleLog.bind(null, 'Created'));
+        pather.on('edited', consoleLog.bind(null, 'Edited'));
 
     });
 
