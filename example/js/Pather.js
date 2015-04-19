@@ -13,12 +13,7 @@
             maxZoom: 18
         }).addTo(map);
 
-        var rangeElement  = $document.querySelector('input.smooth-factor'),
-            buttonElement = $document.querySelector('button.draw-polyline');
-
-        rangeElement.addEventListener('change', function change() {
-            pather.setSmoothFactor(this.value / 10);
-        });
+        var buttonElement = $document.querySelector('button.draw-polyline');
 
         buttonElement.addEventListener('click', function click() {
 
@@ -33,7 +28,7 @@
         });
 
         var pather = new L.Pather({
-            smoothFactor: rangeElement.value / 10,
+            smoothFactor: 5,
             mode: L.Pather.MODE.CREATE | L.Pather.MODE.EDIT
         });
 

@@ -68,21 +68,6 @@ describe('Pather', function() {
 
     });
 
-    it('Should be able to change the smooth factor after drawn;', function() {
-
-        addPather();
-
-        var path = pather.createPath([
-            new L.LatLng(0, 0), new L.LatLng(1, 1), new L.LatLng(2, 2)
-        ]);
-
-        spyOn(path, 'setSmoothFactor');
-
-        pather.setSmoothFactor(2);
-        expect(path.setSmoothFactor).toHaveBeenCalledWith(2);
-
-    });
-
     it('Should be able to clear the D3 paths;', function() {
 
         addPather({ moduleClass: 'clear-this' });

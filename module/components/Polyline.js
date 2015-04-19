@@ -114,8 +114,8 @@
                 event.originalEvent.stopPropagation();
                 event.originalEvent.preventDefault();
 
-                //var latLng = this.map.mouseEventToLatLng(event.originalEvent);
-                //this.insertElbow(latLng);
+                var latLng = this.map.mouseEventToLatLng(event.originalEvent);
+                this.insertElbow(latLng);
 
             }.bind(this));
 
@@ -155,17 +155,13 @@
 
             var newPoint      = this.map.latLngToContainerPoint(latLng),
                 leastDistance = Infinity,
-                insertAt      = -1;
+                insertAt      = -1,
+                points        = this.polyline._parts[0];
 
-            this.polyline._latlngs.forEach(function forEach(currentLatLng, index) {
+            points.forEach(function forEach(currentPoint, index) {
 
-                if (!this.polyline._latlngs[index]) {
-                    return;
-                }
-
-                var firstPoint  = this.map.latLngToContainerPoint(currentLatLng),
-                    secondPoint = this.map.latLngToContainerPoint(this.polyline._latlngs[index]),
-                    distance    = L.LineUtil.pointToSegmentDistance(newPoint, firstPoint, secondPoint);
+                var nextPoint = points[index + 1] || points[0],
+                    distance  = L.LineUtil.pointToSegmentDistance(newPoint, currentPoint, nextPoint);
 
                 if (distance < leastDistance) {
                     leastDistance = distance;
@@ -174,11 +170,14 @@
 
             }.bind(this));
 
-            var latLngs = this.polyline.getLatLngs();
-            latLngs.splice(insertAt, 0, latLng);
-            this.polyline.setLatLngs(latLngs);
+            points.splice(insertAt + 1, 0, newPoint);
 
-            this.redraw(this.latLngsToEdges(latLngs));
+            var parts = points.map(function map(point) {
+                var latLng = this.map.containerPointToLatLng(point);
+                return { _latlng: latLng };
+            }.bind(this));
+
+            this.redraw(parts);
             this.attachElbows();
 
         },
@@ -216,15 +215,21 @@
          */
         redraw: function redraw(edges) {
 
-            var latLngs = [];
+            var latLngs = [],
+                options = {};
 
             edges.forEach(function forEach(edge) {
                 latLngs.push(edge._latlng);
             });
 
-            this.remove(false);
+            Object.keys(this.options).forEach(function forEach(key) {
+                options[key] = this.options[key];
+            }.bind(this));
 
-            this.polyline = new L.Polyline(latLngs, this.options).addTo(this.map);
+            options.smoothFactor = 0;
+
+            this.remove(false);
+            this.polyline = new L.Polyline(latLngs, options).addTo(this.map);
             this.attachPolylineEvents(this.polyline);
 
         },
@@ -240,7 +245,7 @@
 
             this.map.removeLayer(this.polyline);
 
-            if (edgesToo ) {
+            if (edgesToo) {
 
                 this.edges.forEach(function forEach(edge) {
                     this.map.removeLayer(edge);
@@ -268,21 +273,10 @@
          * @return {LatLng[]}
          */
         getLatLngs: function getLatLngs() {
-            return this.polyline._latlngs;
-        },
 
-        /**
-         * @method setSmoothFactor
-         * @param {Number} smoothFactor
-         * @return {void}
-         */
-        setSmoothFactor: function setSmoothFactor(smoothFactor) {
-
-            this.options.smoothFactor = parseInt(smoothFactor);
-
-            this.remove();
-            this.redraw(this.latLngsToEdges(this.polyline._latlngs));
-            this.attachElbows();
+            return this.polyline._parts[0].map(function map(part) {
+                return this.map.containerPointToLatLng(part);
+            }.bind(this));
 
         }
         

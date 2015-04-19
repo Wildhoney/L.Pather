@@ -36,30 +36,6 @@ h2 {
     background-color: #555;
 }
 
-input.smooth-factor {
-    position: absolute;
-    z-index: 3;
-    top: 100px;
-    border-radius: 5px;
-    width: 200px;
-    left: 10px;
-    -webkit-appearance: none;
-    background-color: #555;
-    height: 3px;
-    outline: none;
-}
-
-input.smooth-factor::-webkit-slider-thumb {
-    box-shadow: 0 0 5px rgba(0, 0, 0, .15);
-    -webkit-appearance: none;
-    width: 15px;
-    background-color: white;
-    border: 2px solid #555;
-    cursor: move;
-    border-radius: 50%;
-    height: 15px;
-}
-
 button.draw-polyline {
     position: absolute;
     width: 200px;
@@ -71,7 +47,7 @@ button.draw-polyline {
     outline: none;
     cursor: pointer;
     box-shadow: 0 0 5px rgba(0, 0, 0, .15);
-    top: 120px;
+    top: 85px;
 }
 
 h1 {

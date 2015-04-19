@@ -261,13 +261,7 @@
          * @return {void}
          */
         setSmoothFactor: function setSmoothFactor(smoothFactor) {
-
             this.options.smoothFactor = parseInt(smoothFactor);
-
-            this.polylines.forEach(function forEach(polyline) {
-                polyline.setSmoothFactor(smoothFactor);
-            });
-
         },
 
         /**
