@@ -26,18 +26,12 @@ var pather = new L.Pather();
 map.addLayer(pather);
 ```
 
-You'll likely want to add the above in two lines as shown, because with the `pather` instance you can do some wonderful things!
-
-With the `pather` instance you can listen to the events, such as when a user creates or edits a polyline:
+You'll likely want to add the above in two lines as shown, because with the `pather` instance you can do some wonderful things &ndash; such as when a user creates or edits a polyline:
 
 ```javascript
-pather.on('created', function created(event) {
-    console.log(event.latLngs);
-});
-
-pather.on('edited', function created(event) {
-    console.log(event.latLngs);
-});
+pather.on('created', this.created);
+pather.on('edited', this.edited);
+pather.on('deleted', this.deleted);
 ```
 
 Polylines are created using the mouse, but you may also add polylines manually by supplying an array of `L.LatLng` objects:

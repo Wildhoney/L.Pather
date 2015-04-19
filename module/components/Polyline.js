@@ -257,12 +257,6 @@
 
             }
 
-            this.methods.fire('deleted', {
-                polyline: this,
-                latLngs: []
-            });
-
-
         },
 
         /**

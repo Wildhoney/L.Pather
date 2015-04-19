@@ -93,7 +93,15 @@
 
                 var indexOf = this.polylines.indexOf(model);
                 this.polylines.splice(indexOf, 1);
-                return model.remove();
+
+                model.remove();
+
+                this.fire('deleted', {
+                    polyline: model,
+                    latLngs: []
+                });
+
+                return true;
 
             }
 
