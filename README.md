@@ -69,7 +69,7 @@ Class names on the Leaflet container will contain the class names that resolve t
 <map class="... mode-create mode-append"></map>
 ```
 
-By having the class names reflect the current mode, it allows you to respond via your CSS documents. In the case of [the example on Heroku.com](https://pather.herokuapp.com) we colour the path handles when you have selected the `L.Pather.MODE.CREATE` mode &ndash; note the `mode-edit` class reference:
+By having the class names reflect the current mode, it allows you to respond via your CSS documents. In the case of [the example on Heroku.com](https://pather.herokuapp.com) we colour the path handles when you have selected the `L.Pather.MODE.EDIT` mode &ndash; note the `mode-edit` class reference:
 
 ```css
 section.map.mode-edit div.elbow {
@@ -93,7 +93,7 @@ var pather = new L.Pather({
 });
 ```
 
-You can also modify the options after instantiation by invoking the `setOptions` method with your object of defined options:
+You may also modify the options after instantiation by invoking the `setOptions` method with your object of defined options:
 
 ```javascript
 pather.setOptions({ pathColour: 'orange' });
