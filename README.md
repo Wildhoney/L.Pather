@@ -61,7 +61,7 @@ Since both `L.Pather.MODE.APPEND` and `L.Pather.MODE.DELETE` involve the same `c
 pather.setMode(pather.getMode() ^ L.Pather.MODE.APPEND);
 ```
 
-# Class Names
+# Classes
 
 Class names on the Leaflet container will contain the class names that resolve to the current mode. For example, if modes `L.Pather.MODE.APPEND` and `L.Pather.MODE.CREATE` are currently active, then the map container will have the following two class names:
 
