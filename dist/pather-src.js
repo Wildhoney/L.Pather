@@ -45,9 +45,11 @@
          * @return {void}
          */
         initialize: function initialize(options) {
+
             this.options   = Object.assign(this.defaultOptions(), options || {});
             this.creating  = false;
             this.polylines = [];
+
         },
 
         /**
@@ -63,8 +65,19 @@
 
             this.clearAll();
 
-            var polyline = new L.Pather.Polyline(this.map, latLngs, this.options, this.fire.bind(this));
+            var polyline = new L.Pather.Polyline(this.map, latLngs, this.options, {
+                fire: this.fire.bind(this),
+                mode: this.getMode.bind(this),
+                remove: this.removePath.bind(this)
+            });
+
             this.polylines.push(polyline);
+
+            this.fire('created', {
+                polyline: polyline,
+                latLngs: polyline.getLatLngs()
+            });
+
             return polyline;
 
         },
@@ -89,26 +102,36 @@
         },
 
         /**
+         * @method getPaths
+         * @return {Array}
+         */
+        getPaths: function getPolylines() {
+            return this.polylines;
+        },
+
+        /**
          * @method onAdd
          * @param {L.Map} map
          * @return {void}
          */
         onAdd: function onAdd(map) {
 
-            map.dragging.disable();
+            var element        = this.element = this.options.element || map._container;
+            this.draggingState = map.dragging._enabled;
+            this.map           = map;
+            this.fromPoint     = { x: 0, y: 0 };
+            this.svg           = d3.select(element)
+                                   .append('svg')
+                                       .attr('pointer-events', 'none')
+                                       .attr('class', this.getOption('moduleClass'))
+                                       .attr('width', this.getOption('width'))
+                                       .attr('height', this.getOption('height'));
 
-            var element    = this.options.element || map._container;
-            this.map       = map;
-            this.fromPoint = { x: 0, y: 0 };
-            this.svg       = d3.select(element)
-                               .append('svg')
-                                   .attr('pointer-events', 'none')
-                                   .attr('class', this.getOption('moduleClass'))
-                                   .attr('width', this.getOption('width'))
-                                   .attr('height', this.getOption('height'));
+            map.dragging.disable();
 
             // Attach the mouse events for drawing the polyline.
             this.attachEvents(map);
+            this.setMode(this.options.mode);
 
         },
 
@@ -271,14 +294,46 @@
          */
         setMode: function setMode(mode) {
 
+            this.setClassName(mode);
             this.options.mode = mode;
 
             if (this.options.mode & MODES.CREATE) {
-                return void this.map.dragging.disable();
+                var originalState = this.draggingState ? 'disable' : 'enable';
+                return void this.map.dragging[originalState]();
             }
 
             this.map.dragging.enable();
 
+        },
+
+        /**
+         * @method setClassName
+         * @param {Number} mode
+         * @return {void}
+         */
+        setClassName: function setClassName(mode) {
+
+            /**
+             * @method conditionallyAppendClassName
+             * @param {String} modeName
+             * @return {void}
+             */
+            var conditionallyAppendClassName = function conditionallyAppendClassName(modeName) {
+
+                var className = ['mode', modeName].join('-');
+
+                if (MODES[modeName.toUpperCase()] & mode) {
+                    return void this.element.classList.add(className);
+                }
+
+                this.element.classList.remove(className);
+
+            }.bind(this);
+
+            conditionallyAppendClassName('create');
+            conditionallyAppendClassName('delete');
+            conditionallyAppendClassName('edit');
+            conditionallyAppendClassName('append');
         },
 
         /**
@@ -361,11 +416,11 @@
      * @param {L.Map} map
      * @param {L.LatLng[]} latLngs
      * @param {Object} [options={}]
-     * @param {Function} [fire=function() {}]
+     * @param {Object} methods
      * @return {Polyline}
      * @constructor
      */
-    L.Pather.Polyline = function Polyline(map, latLngs, options, fire) {
+    L.Pather.Polyline = function Polyline(map, latLngs, options, methods) {
 
         this.options = {
             color:        options.pathColour,
@@ -377,17 +432,12 @@
 
         this.polyline     = new L.Polyline(latLngs, this.options).addTo(map);
         this.map          = map;
-        this.fire         = fire || function noop() {};
+        this.methods      = methods;
         this.edges        = [];
         this.manipulating = false;
 
         this.attachPolylineEvents(this.polyline);
         this.select();
-
-        this.fire('created', {
-            polyline: this,
-            latLngs: this.getLatLngs()
-        });
 
     };
 
@@ -461,8 +511,15 @@
                 event.originalEvent.stopPropagation();
                 event.originalEvent.preventDefault();
 
-                var latLng = this.map.mouseEventToLatLng(event.originalEvent);
-                this.insertElbow(latLng);
+                if (this.methods.mode() & L.Pather.MODE.APPEND) {
+
+                    // Appending takes precedence over deletion!
+                    var latLng = this.map.mouseEventToLatLng(event.originalEvent);
+                    this.insertElbow(latLng);
+
+                } else if (this.methods.mode() & L.Pather.MODE.DELETE) {
+                    this.methods.remove(this);
+                }
 
             }.bind(this));
 
@@ -477,9 +534,11 @@
 
             marker.on('mousedown', function mousedown(event) {
 
-                event.originalEvent.stopPropagation();
-                event.originalEvent.preventDefault();
-                this.manipulating = marker;
+                if (this.methods.mode() & L.Pather.MODE.EDIT) {
+                    event.originalEvent.stopPropagation();
+                    event.originalEvent.preventDefault();
+                    this.manipulating = marker;
+                }
 
             }.bind(this));
 
@@ -500,7 +559,7 @@
          */
         insertElbow: function insertElbow(latLng) {
 
-            var newPoint      = this.map.latLngToContainerPoint(latLng),
+            var newPoint      = this.map.latLngToLayerPoint(latLng),
                 leastDistance = Infinity,
                 insertAt      = -1,
                 points        = this.polyline._parts[0];
@@ -520,7 +579,7 @@
             points.splice(insertAt + 1, 0, newPoint);
 
             var parts = points.map(function map(point) {
-                var latLng = this.map.containerPointToLatLng(point);
+                var latLng = this.map.layerPointToLatLng(point);
                 return { _latlng: latLng };
             }.bind(this));
 
@@ -548,7 +607,7 @@
          */
         finished: function finished() {
 
-            this.fire('edited', {
+            this.methods.fire('edited', {
                 polyline: this,
                 latLngs: this.getLatLngs()
             });
@@ -599,6 +658,12 @@
                 }.bind(this));
 
             }
+
+            this.methods.fire('deleted', {
+                polyline: this,
+                latLngs: []
+            });
+
 
         },
 

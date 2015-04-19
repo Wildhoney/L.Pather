@@ -1,0 +1,95 @@
+/*main button.default-button {*/
+    /*position: absolute;*/
+    /*width: 200px;*/
+    /*z-index: 4;*/
+    /*background-color: white;*/
+    /*border: 0;*/
+    /*left: 10px;*/
+    /*padding: 8px;*/
+    /*outline: none;*/
+    /*cursor: pointer;*/
+    /*box-shadow: 0 0 5px rgba(0, 0, 0, .15);*/
+/*}*/
+
+/*main button.default-button.create-polyline {*/
+    /*top: 85px;*/
+/*}*/
+
+/*main button.default-button.remove-polyline {*/
+    /*top: 120px;*/
+/*}*/
+
+main ul.buttons {
+    position: absolute;
+    width: 210px;
+    z-index: 4;
+    top: 85px;
+    list-style-type: none;
+    background-color: white;
+    left: 10px;
+    line-height: 50px;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .15);
+    border: 2px solid white;
+}
+
+main ul.buttons li {
+    margin-right: 2px;
+    background-color: rgba(0, 0, 0, .15);
+    float: left;
+    overflow: hidden;
+    text-align: center;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, .1);
+    font-size: 25px;
+    width: 50px;
+    height: 50px;
+    transition: all .35s;
+    color: rgba(255, 255, 255, .75);
+}
+
+main ul.buttons li i {
+    transform: scale(0.75);
+    transition: all .35s;
+}
+
+main ul.buttons li:last-of-type {
+    margin-right: 0;
+}
+
+main ul.buttons li.active {
+    background-color: lightseagreen;
+    color: white;
+}
+
+main ul.buttons li.active i {
+    transform: scale(1);
+}
+
+main label.mod {
+    position: absolute;
+    top: 140px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    color: rgba(0, 0, 0, .5);
+    z-index: 2;
+    left: 10px;
+    background-color: rgba(255, 255, 255, .9);
+    font-family: Lato, Arial, Tahoma, Helvetia, sans-serif;
+    font-size: 9px;
+}
+
+main label.count {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    float: right;
+    padding: 4px 10px;
+    border-radius: 2px;
+    color: rgba(0, 0, 0, .5);
+    z-index: 2;
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, .15);
+    font-family: Lato, Arial, Tahoma, Helvetia, sans-serif;
+    font-size: 25px;
+}

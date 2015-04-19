@@ -14,11 +14,11 @@
      * @param {L.Map} map
      * @param {L.LatLng[]} latLngs
      * @param {Object} [options={}]
-     * @param {Function} [fire=function() {}]
+     * @param {Object} methods
      * @return {Polyline}
      * @constructor
      */
-    L.Pather.Polyline = function Polyline(map, latLngs, options, fire) {
+    L.Pather.Polyline = function Polyline(map, latLngs, options, methods) {
 
         this.options = {
             color:        options.pathColour,
@@ -30,17 +30,12 @@
 
         this.polyline     = new L.Polyline(latLngs, this.options).addTo(map);
         this.map          = map;
-        this.fire         = fire || function noop() {};
+        this.methods      = methods;
         this.edges        = [];
         this.manipulating = false;
 
         this.attachPolylineEvents(this.polyline);
         this.select();
-
-        this.fire('created', {
-            polyline: this,
-            latLngs: this.getLatLngs()
-        });
 
     };
 
@@ -114,8 +109,15 @@
                 event.originalEvent.stopPropagation();
                 event.originalEvent.preventDefault();
 
-                var latLng = this.map.mouseEventToLatLng(event.originalEvent);
-                this.insertElbow(latLng);
+                if (this.methods.mode() & L.Pather.MODE.APPEND) {
+
+                    // Appending takes precedence over deletion!
+                    var latLng = this.map.mouseEventToLatLng(event.originalEvent);
+                    this.insertElbow(latLng);
+
+                } else if (this.methods.mode() & L.Pather.MODE.DELETE) {
+                    this.methods.remove(this);
+                }
 
             }.bind(this));
 
@@ -130,9 +132,11 @@
 
             marker.on('mousedown', function mousedown(event) {
 
-                event.originalEvent.stopPropagation();
-                event.originalEvent.preventDefault();
-                this.manipulating = marker;
+                if (this.methods.mode() & L.Pather.MODE.EDIT) {
+                    event.originalEvent.stopPropagation();
+                    event.originalEvent.preventDefault();
+                    this.manipulating = marker;
+                }
 
             }.bind(this));
 
@@ -153,7 +157,7 @@
          */
         insertElbow: function insertElbow(latLng) {
 
-            var newPoint      = this.map.latLngToContainerPoint(latLng),
+            var newPoint      = this.map.latLngToLayerPoint(latLng),
                 leastDistance = Infinity,
                 insertAt      = -1,
                 points        = this.polyline._parts[0];
@@ -173,7 +177,7 @@
             points.splice(insertAt + 1, 0, newPoint);
 
             var parts = points.map(function map(point) {
-                var latLng = this.map.containerPointToLatLng(point);
+                var latLng = this.map.layerPointToLatLng(point);
                 return { _latlng: latLng };
             }.bind(this));
 
@@ -201,7 +205,7 @@
          */
         finished: function finished() {
 
-            this.fire('edited', {
+            this.methods.fire('edited', {
                 polyline: this,
                 latLngs: this.getLatLngs()
             });
@@ -252,6 +256,12 @@
                 }.bind(this));
 
             }
+
+            this.methods.fire('deleted', {
+                polyline: this,
+                latLngs: []
+            });
+
 
         },
 

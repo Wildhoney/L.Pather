@@ -45,9 +45,11 @@
          * @return {void}
          */
         initialize: function initialize(options) {
+
             this.options   = Object.assign(this.defaultOptions(), options || {});
             this.creating  = false;
             this.polylines = [];
+
         },
 
         /**
@@ -63,8 +65,19 @@
 
             this.clearAll();
 
-            var polyline = new L.Pather.Polyline(this.map, latLngs, this.options, this.fire.bind(this));
+            var polyline = new L.Pather.Polyline(this.map, latLngs, this.options, {
+                fire: this.fire.bind(this),
+                mode: this.getMode.bind(this),
+                remove: this.removePath.bind(this)
+            });
+
             this.polylines.push(polyline);
+
+            this.fire('created', {
+                polyline: polyline,
+                latLngs: polyline.getLatLngs()
+            });
+
             return polyline;
 
         },
@@ -89,26 +102,36 @@
         },
 
         /**
+         * @method getPaths
+         * @return {Array}
+         */
+        getPaths: function getPolylines() {
+            return this.polylines;
+        },
+
+        /**
          * @method onAdd
          * @param {L.Map} map
          * @return {void}
          */
         onAdd: function onAdd(map) {
 
-            map.dragging.disable();
+            var element        = this.element = this.options.element || map._container;
+            this.draggingState = map.dragging._enabled;
+            this.map           = map;
+            this.fromPoint     = { x: 0, y: 0 };
+            this.svg           = d3.select(element)
+                                   .append('svg')
+                                       .attr('pointer-events', 'none')
+                                       .attr('class', this.getOption('moduleClass'))
+                                       .attr('width', this.getOption('width'))
+                                       .attr('height', this.getOption('height'));
 
-            var element    = this.options.element || map._container;
-            this.map       = map;
-            this.fromPoint = { x: 0, y: 0 };
-            this.svg       = d3.select(element)
-                               .append('svg')
-                                   .attr('pointer-events', 'none')
-                                   .attr('class', this.getOption('moduleClass'))
-                                   .attr('width', this.getOption('width'))
-                                   .attr('height', this.getOption('height'));
+            map.dragging.disable();
 
             // Attach the mouse events for drawing the polyline.
             this.attachEvents(map);
+            this.setMode(this.options.mode);
 
         },
 
@@ -271,14 +294,46 @@
          */
         setMode: function setMode(mode) {
 
+            this.setClassName(mode);
             this.options.mode = mode;
 
             if (this.options.mode & MODES.CREATE) {
-                return void this.map.dragging.disable();
+                var originalState = this.draggingState ? 'disable' : 'enable';
+                return void this.map.dragging[originalState]();
             }
 
             this.map.dragging.enable();
 
+        },
+
+        /**
+         * @method setClassName
+         * @param {Number} mode
+         * @return {void}
+         */
+        setClassName: function setClassName(mode) {
+
+            /**
+             * @method conditionallyAppendClassName
+             * @param {String} modeName
+             * @return {void}
+             */
+            var conditionallyAppendClassName = function conditionallyAppendClassName(modeName) {
+
+                var className = ['mode', modeName].join('-');
+
+                if (MODES[modeName.toUpperCase()] & mode) {
+                    return void this.element.classList.add(className);
+                }
+
+                this.element.classList.remove(className);
+
+            }.bind(this);
+
+            conditionallyAppendClassName('create');
+            conditionallyAppendClassName('delete');
+            conditionallyAppendClassName('edit');
+            conditionallyAppendClassName('append');
         },
 
         /**

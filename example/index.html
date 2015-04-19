@@ -15,21 +15,25 @@
     <script type="text/javascript" src="vendor/d3/d3.js"></script>
     <script type="text/javascript" src="vendor/leaflet/dist/leaflet-src.js"></script>
     <script type="text/javascript" src="vendor/pather/pather.js"></script>
+    <script type="text/javascript" src="vendor/mousetrap/mousetrap.js"></script>
+    <script type="text/javascript" src="vendor/react/react.js"></script>
+    <script type="text/javascript" src="vendor/react/JSXTransformer.js"></script>
 
     <!-- Application! -->
-    <script type="text/javascript" src="js/Pather.js"></script>
+    <script type="text/jsx" src="js/Example.jsx"></script>
 
 </head>
 <body>
 
-    <h1>L.Pather</h1>
-    <a class="fork" target="_blank" href="https://github.com/Wildhoney/L.Pather">
-        <i class="fa fa-github-square"></i>
-        Fork me on GitHub
-    </a>
+    <header>
+        <h1>L.Pather</h1>
+        <a class="fork" target="_blank" href="https://github.com/Wildhoney/L.Pather">
+            <i class="fa fa-github-square"></i>
+            Fork me on GitHub
+        </a>
+    </header>
 
-    <button class="draw-polyline">Stop Drawing</button>
-    <section class="map"></section>
+    <pather-example></pather-example>
 
 </body>
 </html>

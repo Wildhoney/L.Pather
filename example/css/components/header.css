@@ -1,0 +1,46 @@
+header {
+    position: absolute;
+    z-index: 1;
+}
+
+h1 {
+    position: absolute;
+    top: 20px;
+    left: 60px;
+    z-index: 2;
+    background-color: rgba(32, 178, 170, .85);
+    font-size: 16px;
+    text-transform: uppercase;
+    padding-left: 8px;
+    border-radius: 3px 3px 0 0;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, .25);
+    color: white;
+    font-family: Lato, Arial, Tahoma, Helvetia, sans-serif;
+    width: 150px;
+    height: 30px;
+    line-height: 30px;
+}
+
+a.fork {
+    position: absolute;
+    top: 50px;
+    left: 60px;
+    z-index: 3;
+    background-color: rgba(0, 0, 0, .55);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, .25);
+    color: white;
+    font-family: Lato, Arial, Tahoma, Helvetia, sans-serif;
+    border-radius: 0 0 3px 3px;
+    height: 20px;
+    line-height: 20px;
+    font-size: 11px;
+    width: 150px;
+    font-weight: normal;
+    text-decoration: none;
+    text-transform: lowercase;
+    padding-left: 8px;
+}
+
+a.fork i {
+    padding-right: 3px;
+}

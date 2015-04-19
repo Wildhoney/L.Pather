@@ -1,0 +1,36 @@
+main section.map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+main section.map.mode-create {
+    cursor: crosshair;
+}
+
+main section.map div.elbow {
+    transition: background-color .25s;
+    border: 2px solid white;
+    outline: none;
+    box-shadow: 0 0 3px rgba(0, 0, 0, .1);
+    border-radius: 50%;
+    pointer-events: none;
+    background-color: #555;
+}
+
+main section.map.mode-edit div.elbow {
+    cursor: move;
+    pointer-events: all;
+    background-color: orangered;
+}
+
+main section.map.mode-delete:not(.mode-append) path {
+    cursor: not-allowed;
+}
+
+main section.map svg {
+    position: absolute;
+    z-index: 1001;
+}

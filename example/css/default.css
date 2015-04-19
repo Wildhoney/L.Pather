@@ -1,98 +1,10 @@
+/* Excuse the imports... */
+@import 'components/header.css';
+@import 'components/buttons.css';
+@import 'components/map.css';
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-section.map {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    cursor: crosshair;
-}
-
-section.map div.elbow {
-    border: 2px solid white;
-    background-color: orangered;
-    cursor: move;
-    outline: none;
-    box-shadow: 0 0 3px rgba(0, 0, 0, .1);
-    border-radius: 50%;
-}
-
-h2 {
-    position: absolute;
-    top: 84px;
-    left: 10px;
-    padding: 2px 5px;
-    z-index: 3;
-    font-family: Lato, Arial, Tahoma, Helvetia, sans-serif;
-    color: white;
-    font-size: 10px;
-    font-weight: normal;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, .1);
-    background-color: #555;
-}
-
-button.draw-polyline {
-    position: absolute;
-    width: 200px;
-    z-index: 4;
-    background-color: white;
-    border: 0;
-    left: 10px;
-    padding: 8px;
-    outline: none;
-    cursor: pointer;
-    box-shadow: 0 0 5px rgba(0, 0, 0, .15);
-    top: 85px;
-}
-
-h1 {
-    position: absolute;
-    top: 20px;
-    left: 60px;
-    z-index: 2;
-    background-color: rgba(32, 178, 170, .65);
-    font-size: 16px;
-    text-transform: uppercase;
-    padding-left: 8px;
-    border-radius: 3px 3px 0 0;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, .25);
-    color: white;
-    font-family: Lato, Arial, Tahoma, Helvetia, sans-serif;
-    width: 150px;
-    height: 30px;
-    line-height: 30px;
-}
-
-a.fork {
-    position: absolute;
-    top: 50px;
-    left: 60px;
-    z-index: 3;
-    background-color: rgba(0, 0, 0, .55);
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, .25);
-    color: white;
-    font-family: Lato, Arial, Tahoma, Helvetia, sans-serif;
-    border-radius: 0 0 3px 3px;
-    height: 20px;
-    line-height: 20px;
-    font-size: 11px;
-    width: 150px;
-    font-weight: normal;
-    text-decoration: none;
-    text-transform: lowercase;
-    padding-left: 8px;
-}
-
-a.fork i {
-    padding-right: 3px;
-}
-
-svg {
-    position: absolute;
-    z-index: 1001;
 }
