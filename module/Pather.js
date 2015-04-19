@@ -94,7 +94,7 @@
                 var indexOf = this.polylines.indexOf(model);
                 this.polylines.splice(indexOf, 1);
 
-                model.remove();
+                model.softRemove();
 
                 this.fire('deleted', {
                     polyline: model,

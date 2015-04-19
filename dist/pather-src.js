@@ -94,7 +94,7 @@
                 var indexOf = this.polylines.indexOf(model);
                 this.polylines.splice(indexOf, 1);
 
-                model.remove();
+                model.softRemove();
 
                 this.fire('deleted', {
                     polyline: model,
@@ -642,18 +642,18 @@
 
             options.smoothFactor = 0;
 
-            this.remove(false);
+            this.softRemove(false);
             this.polyline = new L.Polyline(latLngs, options).addTo(this.map);
             this.attachPolylineEvents(this.polyline);
 
         },
 
         /**
-         * @method remove
+         * @method softRemove
          * @param {Boolean} [edgesToo=true]
          * @return {void}
          */
-        remove: function remove(edgesToo) {
+        softRemove: function softRemove(edgesToo) {
 
             edgesToo = typeof edgesToo === 'undefined' ? true : edgesToo;
 
@@ -666,19 +666,6 @@
                 }.bind(this));
 
             }
-
-        },
-
-        /**
-         * @method latLngsToEdges
-         * @param {LatLng[]} latLngs
-         * @return {Array}
-         */
-        latLngsToEdges: function latLngsToEdges(latLngs) {
-
-            return latLngs.map(function forEach(latLng) {
-                return { _latlng: latLng };
-            });
 
         },
 

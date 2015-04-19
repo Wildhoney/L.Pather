@@ -36,7 +36,7 @@ describe('Pather', function() {
         ]);
 
         expect(element.querySelectorAll('path').length).toEqual(1);
-        path.remove();
+        path.softRemove();
         expect(element.querySelectorAll('path').length).toEqual(0);
 
     });
@@ -105,6 +105,58 @@ describe('Pather', function() {
         expect(path.edges.length).toEqual(3);
         path.detachElbows();
         expect(path.edges.length).toEqual(0);
+
+    });
+
+    it('Should be able to set the mode correctly;', function() {
+
+        addPather();
+
+        expect(pather.getMode()).toEqual(L.Pather.MODE.ALL);
+        pather.setMode(pather.getMode() ^ L.Pather.MODE.EDIT);
+        expect(pather.getMode() & L.Pather.MODE.EDIT).toEqual(0);
+        pather.setMode(L.Pather.MODE.CREATE | L.Pather.MODE.EDIT);
+        expect(pather.getMode() & L.Pather.MODE.CREATE).toBeTruthy();
+        expect(pather.getMode() & L.Pather.MODE.EDIT).toBeTruthy();
+        expect(pather.getMode() & L.Pather.MODE.APPEND).toBeFalsy();
+        expect(pather.getMode() & L.Pather.MODE.DELETE).toBeFalsy();
+
+    });
+
+    it('Should be able to set the class name to reflect the current mode;', function() {
+
+        addPather({
+            mode: L.Pather.MODE.CREATE | L.Pather.MODE.APPEND
+        });
+
+        expect(element.classList.contains('mode-create')).toBeTruthy();
+        expect(element.classList.contains('mode-append')).toBeTruthy();
+        expect(element.classList.contains('mode-edit')).toBeFalsy();
+        expect(element.classList.contains('mode-delete')).toBeFalsy();
+
+        pather.setMode(L.Pather.MODE.ALL ^ L.Pather.MODE.CREATE);
+        expect(element.classList.contains('mode-create')).toBeFalsy();
+        expect(element.classList.contains('mode-append')).toBeTruthy();
+        expect(element.classList.contains('mode-edit')).toBeTruthy();
+        expect(element.classList.contains('mode-delete')).toBeTruthy();
+
+    });
+
+    it('Should emit events for create, edit, and delete;', function() {
+
+        addPather();
+
+        spyOn(pather, 'fire').and.callThrough();
+
+        var polyline = pather.createPath([new L.LatLng(0, 0), new L.LatLng(1, 1)]);
+        expect(polyline instanceof L.Pather.Polyline).toBeTruthy();
+        expect(pather.fire).toHaveBeenCalled();
+        expect(pather.fire.calls.count()).toEqual(1);
+        expect(pather.getPaths().length).toEqual(1);
+
+        pather.removePath(polyline);
+        expect(pather.fire.calls.count()).toEqual(2);
+        expect(pather.getPaths().length).toEqual(0);
 
     });
 
