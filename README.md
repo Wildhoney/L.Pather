@@ -13,7 +13,7 @@
 
 Branching from [`Leaflet.FreeDraw`](https://github.com/Wildhoney/Leaflet.FreeDraw), L.Pather is a freehand polyline creator that simplifies the polyline for mutability. The reason for creating a branch from `FreeDraw` is that a polyline feature would bloat `FreeDraw` unnecessarily, whilst diverging from `FreeDraw`'s original purpose for allowing geospatial queries.
 
-![L.Pather Screenshot](http://i.imgur.com/J9ndW0y.jpg)
+![L.Pather Screenshot](http://i.imgur.com/Hvhh8KL.png)
 
 ---
 
@@ -37,7 +37,7 @@ pather.on('deleted', this.deleted);
 Polylines are created using the mouse, but you may also add polylines manually by supplying an array of `L.LatLng` objects:
 
 ```javascript
-var polyline = pather.createPath(new LatLng[]);
+var polyline = pather.createPath(LatLng[]);
 ```
 
 Using the `polyline` instance, which would resolve to `L.Pather.Polyline` you can invoke many more methods. Although perhaps the most common would be to use it in the deletion process of your polyline:
