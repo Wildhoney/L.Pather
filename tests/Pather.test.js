@@ -184,4 +184,19 @@ describe('Pather', function() {
 
     });
 
+    it('Should be able to modify options after instantiation;', function() {
+
+        addPather({ smoothFactor: 2.5, strokeWidth: 10 });
+        
+        expect(pather.options.smoothFactor).toEqual(2.5);
+        expect(pather.options.strokeWidth).toEqual(10);
+        expect(pather.options.pathColour).toEqual('black');
+
+        pather.setOptions({ smoothFactor: 12.5 });
+        expect(pather.options.smoothFactor).toEqual(12.5);
+        expect(pather.options.strokeWidth).toEqual(10);
+        expect(pather.options.pathColour).toEqual('black');
+
+    });
+
 });

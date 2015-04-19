@@ -350,6 +350,15 @@
          */
         getMode: function getMode() {
             return this.options.mode;
+        },
+
+        /**
+         * @method setOptions
+         * @param {Object} options
+         * @return {void}
+         */
+        setOptions: function setOptions(options) {
+            this.options = Object.assign(this.options, options || {});
         }
 
     });

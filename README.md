@@ -93,4 +93,10 @@ var pather = new L.Pather({
 });
 ```
 
+You can also modify the options after instantiation by invoking the `setOptions` method with your object of defined options:
+
+```javascript
+pather.setOptions({ pathColour: 'orange' });
+```
+
 **Note:** In defining the options, `L.Pather` uses ES6's [`Object.assign`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign) which is polyfilled using the [MDN's polyfill](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill) if your browser doesn't currently support it.
