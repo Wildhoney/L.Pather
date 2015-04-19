@@ -4,9 +4,9 @@
 
     /**
      * @constant DATA_ATTRIBUTE
-     * @type {String}
+     * @type {String|Symbol}
      */
-    var DATA_ATTRIBUTE = '_pather';
+    var DATA_ATTRIBUTE = typeof Symbol === 'undefined' ? '_pather' : Symbol.for('pather');
 
     /**
      * @module Pather

@@ -160,4 +160,28 @@ describe('Pather', function() {
 
     });
 
+    it('Should be able to use the Symbol constructor for the internal Pather property;', function() {
+
+        addPather();
+
+        var polyline = pather.createPath([new L.LatLng(0, 0), new L.LatLng(1, 1)]),
+            edge     = polyline.edges[0];
+
+        if (typeof Symbol !== 'undefined') {
+
+            var symbols = Object.getOwnPropertySymbols(edge);
+
+            expect(symbols.length).toEqual(1);
+            expect(edge._pather).toBeUndefined();
+            expect(typeof edge[symbols[0]]).toBe('object');
+
+        } else {
+
+            expect(edge._pather).toBeDefined();
+            expect(typeof edge._pather).toBe('object');
+
+        }
+
+    });
+
 });
