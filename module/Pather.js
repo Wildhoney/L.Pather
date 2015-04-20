@@ -151,6 +151,21 @@
         attachEvents: function attachEvents(map) {
 
             /**
+             * @method getEvent
+             * @param {Object} event
+             * @return {Object}
+             */
+            function getEvent(event) {
+
+                if (event.touches) {
+                    return event.touches[0];
+                }
+
+                return event;
+
+            }
+
+            /**
              * @method manipulatingEdges
              * @return {Object}
              */
@@ -172,10 +187,16 @@
 
             map.on('mousedown', function mousedown(event) {
 
+                event = event.originalEvent || getEvent(event);
+
+                var containerPoint = this.map.mouseEventToContainerPoint(event),
+                    point          = this.map.containerPointToLayerPoint(containerPoint),
+                    latLng         = this.map.layerPointToLatLng(point);
+
                 if (hasCreatePermission() && manipulatingEdges().length === 0) {
 
                     this.creating  = true;
-                    this.fromPoint = map.latLngToContainerPoint(event.latlng);
+                    this.fromPoint = map.latLngToContainerPoint(latLng);
                     this.latLngs   = [];
 
                 }
@@ -186,6 +207,41 @@
 
                 this.clearAll();
                 this.creating = false;
+
+            }.bind(this));
+
+            map.on('mousemove', function mousemove(event) {
+
+                event = event.originalEvent || getEvent(event);
+
+                var containerPoint = this.map.mouseEventToContainerPoint(event),
+                    point          = this.map.containerPointToLayerPoint(containerPoint);
+
+                if (manipulatingEdges().length > 0) {
+                    manipulatingEdges()[0].moveTo(point);
+                    return;
+                }
+
+                var lineFunction = d3.svg.line()
+                                     .x(function x(d) { return d.x; })
+                                     .y(function y(d) { return d.y; })
+                                     .interpolate('linear');
+
+                if (this.creating) {
+
+                    var lineData = [this.fromPoint, new L.Point(point.x, point.y, false)];
+                    this.latLngs.push(point);
+
+                    this.svg.append('path')
+                            .classed(this.getOption('lineClass'), true)
+                                .attr('d', lineFunction(lineData))
+                                .attr('stroke', this.getOption('strokeColour'))
+                                .attr('stroke-width', this.getOption('strokeWidth'))
+                                .attr('fill', 'none');
+
+                    this.fromPoint = { x: point.x, y: point.y };
+
+                }
 
             }.bind(this));
 
@@ -206,37 +262,10 @@
 
             }.bind(this));
 
-            map.on('mousemove', function mousemove(event) {
-
-                if (manipulatingEdges().length > 0) {
-                    manipulatingEdges()[0].moveTo(event.layerPoint);
-                    return;
-                }
-
-                var lineFunction = d3.svg.line()
-                                     .x(function x(d) { return d.x; })
-                                     .y(function y(d) { return d.y; })
-                                     .interpolate('linear');
-
-                if (this.creating) {
-
-                    var point    = map.mouseEventToContainerPoint(event.originalEvent),
-                        lineData = [this.fromPoint, new L.Point(point.x, point.y, false)];
-
-                    this.latLngs.push(point);
-
-                    this.svg.append('path')
-                            .classed(this.getOption('lineClass'), true)
-                                .attr('d', lineFunction(lineData))
-                                .attr('stroke', this.getOption('strokeColour'))
-                                .attr('stroke-width', this.getOption('strokeWidth'))
-                                .attr('fill', 'none');
-
-                    this.fromPoint = { x: point.x, y: point.y };
-
-                }
-
-            }.bind(this));
+            // Attach the mobile events that delegate to the desktop events.
+            this.map._container.addEventListener('touchstart', this.fire.bind(map, 'mousedown'));
+            this.map._container.addEventListener('touchmove', this.fire.bind(map, 'mousemove'));
+            this.map._container.addEventListener('touchend', this.fire.bind(map, 'mouseup'));
 
         },
 

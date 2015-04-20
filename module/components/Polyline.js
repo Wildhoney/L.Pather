@@ -132,21 +132,37 @@
 
             marker.on('mousedown', function mousedown(event) {
 
+                event = event.originalEvent || event;
+
                 if (this.methods.mode() & L.Pather.MODE.EDIT) {
-                    event.originalEvent.stopPropagation();
-                    event.originalEvent.preventDefault();
+
+                    if (event.stopPropagation) {
+                        event.stopPropagation();
+                        event.preventDefault();
+                    }
+
                     this.manipulating = marker;
+
                 }
 
             }.bind(this));
 
             marker.on('mouseup', function mouseup(event) {
 
-                event.originalEvent.stopPropagation();
-                event.originalEvent.preventDefault();
+                event = event.originalEvent || event;
+
+                if (event.stopPropagation) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                }
+
                 this.manipulating = false;
 
             });
+
+            // Attach the mobile events to delegate to the desktop equivalent events.
+            marker._icon.addEventListener('touchstart', marker.fire.bind(marker, 'mousedown'));
+            marker._icon.addEventListener('touchend', marker.fire.bind(marker, 'mouseup'));
 
         },
 
