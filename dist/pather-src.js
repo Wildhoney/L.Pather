@@ -182,6 +182,13 @@
 
             }.bind(this));
 
+            map._container.addEventListener('mouseleave', function mouseleave() {
+
+                this.clearAll();
+                this.creating = false;
+
+            }.bind(this));
+
             map.on('mouseup', function mouseup() {
 
                 if (manipulatingEdges().length === 0) {
@@ -305,11 +312,17 @@
             this.setClassName(mode);
             this.options.mode = mode;
 
+            var tileLayer = this.map._container.querySelector('.leaflet-tile-pane');
+
             if (this.options.mode & MODES.CREATE) {
+
                 var originalState = this.draggingState ? 'disable' : 'enable';
+                tileLayer.style.pointerEvents = 'none';
                 return void this.map.dragging[originalState]();
+
             }
 
+            tileLayer.style.pointerEvents = 'all';
             this.map.dragging.enable();
 
         },
