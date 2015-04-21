@@ -352,10 +352,10 @@
             var shouldDisableDrag = function shouldDisableDrag() {
 
                 if (this.detectTouch && ('ontouchstart' in $window || 'onmsgesturechange' in $window)) {
-                    return (this.options.mode & MODES.CREATE || thi.options.mode & MODES.EDIT);
+                    return (this.options.mode & MODES.CREATE || this.options.mode & MODES.EDIT);
                 }
 
-                return this.options.mode & MODES.CREATE;
+                return (this.options.mode & MODES.CREATE);
 
             }.bind(this);
 
