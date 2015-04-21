@@ -62,14 +62,6 @@
                     mode: L.Pather.MODE.ALL
             });
 
-            if ($navigator.geolocation) {
-
-                $navigator.geolocation.getCurrentPosition(function getCurrentPosition(position) {
-                    map.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
-                }.bind(this));
-
-            }
-
             L.tileLayer('https://a.tiles.mapbox.com/v4/examples.ra3sdcxr/{z}/{x}/{y}@2x.png?access_token=' + this.props.accessToken, {
                 maxZoom: 18
             }).addTo(map);
