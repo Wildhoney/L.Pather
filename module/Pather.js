@@ -1,4 +1,4 @@
-(function main() {
+(function main($window) {
 
     "use strict";
 
@@ -308,6 +308,7 @@
             return {
                 moduleClass: 'pather',
                 lineClass: 'drawing-line',
+                detectTouch: true,
                 elbowClass: 'elbow',
                 strokeColour: 'rgba(0,0,0,.5)',
                 strokeWidth: 2,
@@ -343,7 +344,22 @@
 
             var tileLayer = this.map._container.querySelector('.leaflet-tile-pane');
 
-            if (this.options.mode & MODES.CREATE) {
+            /**
+             * @method shouldDisableDrag
+             * @return {Boolean}
+             * @see http://www.stucox.com/blog/you-cant-detect-a-touchscreen/
+             */
+            var shouldDisableDrag = function shouldDisableDrag() {
+
+                if (this.detectTouch && ('ontouchstart' in $window || 'onmsgesturechange' in $window)) {
+                    return (this.options.mode & MODES.CREATE || thi.options.mode & MODES.EDIT);
+                }
+
+                return this.options.mode & MODES.CREATE;
+
+            }.bind(this);
+
+            if (shouldDisableDrag()) {
 
                 var originalState = this.draggingState ? 'disable' : 'enable';
                 tileLayer.style.pointerEvents = 'none';
@@ -416,4 +432,4 @@
         return new L.Pather(options);
     };
 
-})();
+})(window);
