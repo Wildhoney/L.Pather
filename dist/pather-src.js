@@ -189,9 +189,8 @@
 
                 event = event.originalEvent || getEvent(event);
 
-                var containerPoint = this.map.mouseEventToContainerPoint(event),
-                    point          = this.map.containerPointToLayerPoint(containerPoint),
-                    latLng         = this.map.layerPointToLatLng(point);
+                var point  = this.map.mouseEventToContainerPoint(event),
+                    latLng = this.map.containerPointToLatLng(point);
 
                 if (hasCreatePermission() && manipulatingEdges().length === 0) {
 
@@ -203,20 +202,13 @@
 
             }.bind(this));
 
-            map._container.addEventListener('mouseleave', function mouseleave() {
-
-                this.clearAll();
-                this.creating = false;
-
-            }.bind(this));
-
             map.on('mousemove', function mousemove(event) {
 
                 event     = event.originalEvent || getEvent(event);
                 var point = this.map.mouseEventToContainerPoint(event);
 
                 if (manipulatingEdges().length > 0) {
-                    manipulatingEdges()[0].moveTo(point);
+                    manipulatingEdges()[0].moveTo(this.map.containerPointToLayerPoint(point));
                     return;
                 }
 
@@ -240,6 +232,13 @@
                     this.fromPoint = { x: point.x, y: point.y };
 
                 }
+
+            }.bind(this));
+
+            map._container.addEventListener('mouseleave', function mouseleave() {
+
+                this.clearAll();
+                this.creating = false;
 
             }.bind(this));
 
