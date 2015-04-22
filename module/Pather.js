@@ -212,10 +212,8 @@
 
             map.on('mousemove', function mousemove(event) {
 
-                event = event.originalEvent || getEvent(event);
-
-                var containerPoint = this.map.mouseEventToContainerPoint(event),
-                    point          = this.map.containerPointToLayerPoint(containerPoint);
+                event     = event.originalEvent || getEvent(event);
+                var point = this.map.mouseEventToContainerPoint(event);
 
                 if (manipulatingEdges().length > 0) {
                     manipulatingEdges()[0].moveTo(point);
