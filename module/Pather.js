@@ -161,6 +161,7 @@
             this.map.off('mousedown', this.eventHandlers.mouseDown);
             this.map.off('mousemove', this.eventHandlers.mouseMove);
             this.map.off('mouseup',   this.eventHandlers.mouseUp);
+            this.map.getContainer().removeEventListener('mouseleave', this.eventHandlers.mouseLeave);
 
             this.element.classList.remove('mode-create');
             this.element.classList.remove('mode-delete');
