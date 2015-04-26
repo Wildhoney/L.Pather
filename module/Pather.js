@@ -148,7 +148,7 @@
          * @method onRemove
          * @return {void}
          */
-        onRemove() {
+        onRemove: function onRemove() {
 
             this.svg.remove();
 
