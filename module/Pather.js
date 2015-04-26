@@ -46,9 +46,10 @@
          */
         initialize: function initialize(options) {
 
-            this.options   = Object.assign(this.defaultOptions(), options || {});
-            this.creating  = false;
-            this.polylines = [];
+            this.options       = Object.assign(this.defaultOptions(), options || {});
+            this.creating      = false;
+            this.polylines     = [];
+            this.eventHandlers = [];
 
         },
 
@@ -124,7 +125,7 @@
          */
         onAdd: function onAdd(map) {
 
-            var element        = this.element = this.options.element || map._container;
+            var element        = this.element = this.options.element || map.getContainer();
             this.draggingState = map.dragging._enabled;
             this.map           = map;
             this.fromPoint     = { x: 0, y: 0 };
@@ -144,78 +145,118 @@
         },
 
         /**
-         * @method attachEvents
-         * @param {L.Map} map
+         * @method onRemove
          * @return {void}
          */
-        attachEvents: function attachEvents(map) {
+        onRemove() {
 
-            /**
-             * @method getEvent
-             * @param {Object} event
-             * @return {Object}
-             */
-            function getEvent(event) {
+            this.svg.remove();
 
-                if (event.touches) {
-                    return event.touches[0];
-                }
+            var length = this.polylines.length;
 
-                return event;
-
+            while (length--) {
+                this.removePath(this.polylines[length]);
             }
 
+            this.map.off('mousedown', this.eventHandlers.mouseDown);
+            this.map.off('mousemove', this.eventHandlers.mouseMove);
+            this.map.off('mouseup',   this.eventHandlers.mouseUp);
+
+            this.element.classList.remove('mode-create');
+            this.element.classList.remove('mode-delete');
+            this.element.classList.remove('mode-edit');
+            this.element.classList.remove('mode-append');
+
+            var tileLayer     = this.map.getContainer().querySelector('.leaflet-tile-pane'),
+                originalState = this.draggingState ? 'enable' : 'disable';
+            tileLayer.style.pointerEvents = 'all';
+            this.map.dragging[originalState]();
+
+        },
+
+        /**
+         * @method getEvent
+         * @param {Object} event
+         * @return {Object}
+         */
+        getEvent: function getEvent(event) {
+
+            if (event.touches) {
+                return event.touches[0];
+            }
+
+            return event;
+
+        },
+
+        /**
+         * @method edgeBeingChanged
+         * @return {Array}
+         */
+        edgeBeingChanged: function edgeBeingChanged() {
+
+            var edges = this.polylines.filter(function filter(polyline) {
+                return polyline.manipulating;
+            });
+
+            return edges.length === 0 ? null : edges[0];
+
+        },
+
+        /**
+         * @method isPolylineCreatable
+         * @return {Boolean}
+         */
+        isPolylineCreatable: function isPolylineCreatable() {
+            return !!(this.options.mode & MODES.CREATE);
+        },
+
+        /**
+         * @property events
+         * @type {Object}
+         */
+        events: {
+
             /**
-             * @method manipulatingEdges
-             * @return {Object}
+             * @method mouseDown
+             * @param {Object} event
              */
-            var manipulatingEdges = function manipulatingEdges() {
+            mouseDown: function mouseDown(event) {
 
-                return this.polylines.filter(function filter(polyline) {
-                    return polyline.manipulating;
-                });
-
-            }.bind(this);
-
-            /**
-             * @method hasCreatePermission
-             * @return {Boolean}
-             */
-            var hasCreatePermission = function hasCreatePermission() {
-                return !!(this.options.mode & MODES.CREATE);
-            }.bind(this);
-
-            map.on('mousedown', function mousedown(event) {
-
-                event = event.originalEvent || getEvent(event);
+                event = event.originalEvent || this.getEvent(event);
 
                 var point  = this.map.mouseEventToContainerPoint(event),
                     latLng = this.map.containerPointToLatLng(point);
 
-                if (hasCreatePermission() && manipulatingEdges().length === 0) {
+                if (this.isPolylineCreatable() && !this.edgeBeingChanged()) {
 
                     this.creating  = true;
-                    this.fromPoint = map.latLngToContainerPoint(latLng);
+                    this.fromPoint = this.map.latLngToContainerPoint(latLng);
                     this.latLngs   = [];
 
                 }
 
-            }.bind(this));
+            },
 
-            map.on('mousemove', function mousemove(event) {
+            /**
+             * @method mouseMove
+             * @param {Object} event
+             * @return {void}
+             */
+            mouseMove: function mouseMove(event) {
 
-                event     = event.originalEvent || getEvent(event);
+                event     = event.originalEvent || this.getEvent(event);
                 var point = this.map.mouseEventToContainerPoint(event);
 
-                if (manipulatingEdges().length > 0) {
-                    manipulatingEdges()[0].moveTo(this.map.containerPointToLayerPoint(point));
+                if (this.edgeBeingChanged()) {
+                    this.edgeBeingChanged().moveTo(this.map.containerPointToLayerPoint(point));
                     return;
                 }
 
                 var lineFunction = d3.svg.line()
-                                     .x(function x(d) { return d.x; })
-                                     .y(function y(d) { return d.y; })
-                                     .interpolate('linear');
+                    .x(function x(d) { return d.x; })
+                    .y(function y(d) { return d.y; })
+                    .interpolate('linear');
 
                 if (this.creating) {
 
@@ -223,28 +264,34 @@
                     this.latLngs.push(point);
 
                     this.svg.append('path')
-                            .classed(this.getOption('lineClass'), true)
-                                .attr('d', lineFunction(lineData))
-                                .attr('stroke', this.getOption('strokeColour'))
-                                .attr('stroke-width', this.getOption('strokeWidth'))
-                                .attr('fill', 'none');
+                        .classed(this.getOption('lineClass'), true)
+                        .attr('d', lineFunction(lineData))
+                        .attr('stroke', this.getOption('strokeColour'))
+                        .attr('stroke-width', this.getOption('strokeWidth'))
+                        .attr('fill', 'none');
 
                     this.fromPoint = { x: point.x, y: point.y };
 
                 }
 
-            }.bind(this));
+            },
 
-            map._container.addEventListener('mouseleave', function mouseleave() {
-
+            /**
+             * @method mouseLeave
+             * @return {void}
+             */
+            mouseLeave: function mouseLeave() {
                 this.clearAll();
                 this.creating = false;
+            },
 
-            }.bind(this));
+            /**
+             * @method mouseUp
+             * @return {void}
+             */
+            mouseUp: function mouseup() {
 
-            map.on('mouseup', function mouseup() {
-
-                if (manipulatingEdges().length === 0) {
+                if (!this.edgeBeingChanged()) {
 
                     this.creating = false;
                     this.createPath(this.convertPointsToLatLngs(this.latLngs));
@@ -253,16 +300,37 @@
 
                 }
 
-                manipulatingEdges()[0].attachElbows();
-                manipulatingEdges()[0].finished();
-                manipulatingEdges()[0].manipulating = false;
+                this.edgeBeingChanged().attachElbows();
+                this.edgeBeingChanged().finished();
+                this.edgeBeingChanged().manipulating = false;
 
-            }.bind(this));
+            }
+
+        },
+
+        /**
+         * @method attachEvents
+         * @param {L.Map} map
+         * @return {void}
+         */
+        attachEvents: function attachEvents(map) {
+
+            this.eventHandlers = {
+                mouseDown:  this.events.mouseDown.bind(this),
+                mouseMove:  this.events.mouseMove.bind(this),
+                mouseUp:    this.events.mouseUp.bind(this),
+                mouseLeave: this.events.mouseLeave.bind(this)
+            };
+
+            this.map.on('mousedown', this.eventHandlers.mouseDown);
+            this.map.on('mousemove', this.eventHandlers.mouseMove);
+            this.map.on('mouseup', this.eventHandlers.mouseUp);
+            this.map.getContainer().addEventListener('mouseleave', this.eventHandlers.mouseLeave);
 
             // Attach the mobile events that delegate to the desktop events.
-            this.map._container.addEventListener('touchstart', this.fire.bind(map, 'mousedown'));
-            this.map._container.addEventListener('touchmove', this.fire.bind(map, 'mousemove'));
-            this.map._container.addEventListener('touchend', this.fire.bind(map, 'mouseup'));
+            this.map.getContainer().addEventListener('touchstart', this.fire.bind(map, 'mousedown'));
+            this.map.getContainer().addEventListener('touchmove', this.fire.bind(map, 'mousemove'));
+            this.map.getContainer().addEventListener('touchend', this.fire.bind(map, 'mouseup'));
 
         },
 
@@ -339,7 +407,7 @@
             this.setClassName(mode);
             this.options.mode = mode;
 
-            var tileLayer = this.map._container.querySelector('.leaflet-tile-pane');
+            var tileLayer = this.map.getContainer().querySelector('.leaflet-tile-pane');
 
             /**
              * @method shouldDisableDrag
