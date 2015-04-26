@@ -152,10 +152,14 @@
 
             this.svg.remove();
 
-            var length = this.polylines.length;
+            if (this.options.removePolylines) {
 
-            while (length--) {
-                this.removePath(this.polylines[length]);
+                var length = this.polylines.length;
+
+                while (length--) {
+                    this.removePath(this.polylines[length]);
+                }
+
             }
 
             this.map.off('mousedown', this.eventHandlers.mouseDown);
@@ -376,6 +380,7 @@
                 lineClass: 'drawing-line',
                 detectTouch: true,
                 elbowClass: 'elbow',
+                removePolylines: true,
                 strokeColour: 'rgba(0,0,0,.5)',
                 strokeWidth: 2,
                 width: '100%',
