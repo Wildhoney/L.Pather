@@ -834,7 +834,7 @@
         getLatLngs: function getLatLngs() {
 
             return this.polyline._parts[0].map(function map(part) {
-                return this.map.containerPointToLatLng(part);
+                return this.map.layerPointToLatLng(part);
             }.bind(this));
 
         }
