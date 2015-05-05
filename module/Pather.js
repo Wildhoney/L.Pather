@@ -296,7 +296,7 @@
              */
             mouseUp: function mouseup() {
 
-                if (!this.edgeBeingChanged()) {
+                if (this.creating) {
 
                     this.creating = false;
                     this.createPath(this.convertPointsToLatLngs(this.latLngs));
@@ -305,9 +305,13 @@
 
                 }
 
-                this.edgeBeingChanged().attachElbows();
-                this.edgeBeingChanged().finished();
-                this.edgeBeingChanged().manipulating = false;
+                if (this.edgeBeingChanged()) {
+
+                    this.edgeBeingChanged().attachElbows();
+                    this.edgeBeingChanged().finished();
+                    this.edgeBeingChanged().manipulating = false;
+
+                }
 
             }
 
