@@ -6,7 +6,7 @@
     "Adam Timberlake <adam.timberlake@gmail.com>"
   ],
   "description": "Branching from Leaflet.FreeDraw, L.Pather is a freehand polyline creator that simplifies the polyline for mutability.",
-  "main": "dist/pather.min.js",
+  "main": "dist/pather.js",
   "keywords": [
     "polyline",
     "leaflet",
