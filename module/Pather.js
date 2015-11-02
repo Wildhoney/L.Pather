@@ -1,7 +1,7 @@
 (function (factory, window) {
 
     // define an AMD module that relies on 'leaflet'
-    if (false && typeof define === 'function' && define.amd) {
+    if (typeof define === 'function' && define.amd) {
         define(['leaflet', 'd3'], factory);
 
     // define a Common JS module that relies on 'leaflet'
