@@ -62,7 +62,7 @@
                     mode: L.Pather.MODE.ALL
             });
 
-            L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png', {
+            L.tileLayer('https://a.tiles.mapbox.com/v4/examples.ra3sdcxr/{z}/{x}/{y}@2x.png?access_token=' + this.props.accessToken, {
                 maxZoom: 18
             }).addTo(map);
 
@@ -178,7 +178,7 @@
     });
 
     $react.render(
-        <Pather />,
+        <Pather accessToken="pk.eyJ1Ijoid2lsZGhvbmV5IiwiYSI6Imt3RkVmTTAifQ.oMrTcDjz8GEhZUhYME7pHw" />,
         $document.querySelector('pather-example')
     );
 
