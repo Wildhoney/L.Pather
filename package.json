@@ -8,6 +8,7 @@
     "test": "tests"
   },
   "scripts": {
+    "build": "bower i && gulp build",
     "test": "gulp test"
   },
   "repository": {
