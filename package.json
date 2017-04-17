@@ -46,5 +46,9 @@
     "karma": "^0.12.31",
     "karma-firefox-launcher": "^0.1.4",
     "karma-jasmine": "^0.3.5"
+  },
+  "dependencies": {
+    "leaflet": ">0.7.0",
+    "d3": "~3.5.5"
   }
 }
