@@ -8,3 +8,5 @@ npm-debug.log
 # Bower
 example/vendor/*
 !example/vendor/.gitkeep
+
+dist/
