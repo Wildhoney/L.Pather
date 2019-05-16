@@ -10,3 +10,5 @@ example/vendor/*
 !example/vendor/.gitkeep
 
 dist/
+.r2-cache/
+.cache/

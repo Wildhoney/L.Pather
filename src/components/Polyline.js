@@ -1,3 +1,5 @@
+import { MODES } from "../Pather";
+
 /**
  * @constant DATA_ATTRIBUTE
  * @type {String|Symbol}
@@ -92,11 +94,11 @@ export default class Polyline {
       event.originalEvent.stopPropagation();
       event.originalEvent.preventDefault();
 
-      if (this.methods.mode() & L.Pather.MODE.APPEND) {
+      if (this.methods.mode() & MODES.APPEND) {
         // Appending takes precedence over deletion!
         var latLng = this.map.mouseEventToLatLng(event.originalEvent);
         this.insertElbow(latLng);
-      } else if (this.methods.mode() & L.Pather.MODE.DELETE) {
+      } else if (this.methods.mode() & MODES.DELETE) {
         this.methods.remove(this);
       }
     });
@@ -111,7 +113,7 @@ export default class Polyline {
     marker.on("mousedown", event => {
       event = event.originalEvent || event;
 
-      if (this.methods.mode() & L.Pather.MODE.EDIT) {
+      if (this.methods.mode() & MODES.EDIT) {
         if (event.stopPropagation) {
           event.stopPropagation();
           event.preventDefault();

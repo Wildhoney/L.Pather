@@ -1,41 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>L.Pather</title>
 
     <!-- Prettification! -->
-    <link rel="stylesheet" type="text/css" href="css/default.css" />
-    <link rel="stylesheet" type="text/css" href="vendor/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" type="text/css" href="vendor/font-awesome/css/font-awesome.css" />
-    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic" rel="stylesheet" type="text/css" />
-
-    <!-- Dependencies! -->
-    <script type="text/javascript" src="vendor/d3/d3.js"></script>
-    <script type="text/javascript" src="vendor/leaflet/dist/leaflet-src.js"></script>
-    <script type="text/javascript" src="vendor/pather/pather.js"></script>
-    <script type="text/javascript" src="vendor/mousetrap/mousetrap.js"></script>
-    <script type="text/javascript" src="vendor/react/react.js"></script>
-    <script type="text/javascript" src="vendor/react/JSXTransformer.js"></script>
-
-    <!-- Application! -->
-    <script type="text/jsx" src="js/Example.jsx"></script>
-
-</head>
-<body>
-
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+      integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic"
+      rel="stylesheet"
+      type="text/css"
+    />
+  </head>
+  <body>
     <header>
-        <h1>L.Pather</h1>
-        <a class="fork" target="_blank" href="https://github.com/Wildhoney/L.Pather">
-            <i class="fa fa-github-square"></i>
-            Fork me on GitHub
-        </a>
+      <h1>L.Pather</h1>
+      <a
+        class="fork"
+        target="_blank"
+        href="https://github.com/Wildhoney/L.Pather"
+      >
+        <i class="fa fa-github-square"></i>
+        Fork me on GitHub
+      </a>
     </header>
 
-    <pather-example></pather-example>
-
-</body>
+    <div id="root"></div>
+    <script src="./js/Example.js"></script>
+  </body>
 </html>

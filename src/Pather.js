@@ -1,4 +1,9 @@
 import { FeatureGroup } from "leaflet";
+import { select } from "d3-selection";
+import { line, curveLinear } from "d3-shape";
+
+import Polyline from "./components/Polyline";
+
 /**
  * @constant MODES
  * @type {{VIEW: number, CREATE: number, EDIT: number, DELETE: number, APPEND: number, EDIT_APPEND: number, ALL: number}}
@@ -41,79 +46,77 @@ export default class Pather extends FeatureGroup {
     this.creating = false;
     this.polylines = [];
     this.eventHandlers = [];
-  }
 
-  events = {
-    mouseDown(event) {
-      event = event.originalEvent || this.getEvent(event);
+    this.events = {
+      mouseDown(event) {
+        event = event.originalEvent || this.getEvent(event);
 
-      const point = this.map.mouseEventToContainerPoint(event),
-        latLng = this.map.containerPointToLatLng(point);
+        const point = this.map.mouseEventToContainerPoint(event),
+          latLng = this.map.containerPointToLatLng(point);
 
-      if (this.isPolylineCreatable() && !this.edgeBeingChanged()) {
-        this.creating = true;
-        this.fromPoint = this.map.latLngToContainerPoint(latLng);
-        this.latLngs = [];
-      }
-    },
+        if (this.isPolylineCreatable() && !this.edgeBeingChanged()) {
+          this.creating = true;
+          this.fromPoint = this.map.latLngToContainerPoint(latLng);
+          this.latLngs = [];
+        }
+      },
 
-    mouseMove(event) {
-      event = event.originalEvent || this.getEvent(event);
-      const point = this.map.mouseEventToContainerPoint(event);
+      mouseMove(event) {
+        event = event.originalEvent || this.getEvent(event);
+        const point = this.map.mouseEventToContainerPoint(event);
 
-      if (this.edgeBeingChanged()) {
-        this.edgeBeingChanged().moveTo(
-          this.map.containerPointToLayerPoint(point)
-        );
-        return;
-      }
+        if (this.edgeBeingChanged()) {
+          this.edgeBeingChanged().moveTo(
+            this.map.containerPointToLayerPoint(point)
+          );
+          return;
+        }
 
-      const lineFunction = d3.svg
-        .line()
-        .x(function x(d) {
-          return d.x;
-        })
-        .y(function y(d) {
-          return d.y;
-        })
-        .interpolate("linear");
+        const lineFunction = line()
+          .curve(curveLinear)
+          .x(d => d.x)
+          .y(d => d.y);
 
-      if (this.creating) {
-        const lineData = [this.fromPoint, new L.Point(point.x, point.y, false)];
-        this.latLngs.push(point);
+        if (this.creating) {
+          const lineData = [
+            this.fromPoint,
+            new L.Point(point.x, point.y, false)
+          ];
+          this.latLngs.push(point);
 
-        this.svg
-          .append("path")
-          .classed(this.getOption("lineClass"), true)
-          .attr("d", lineFunction(lineData))
-          .attr("stroke", this.getOption("strokeColour"))
-          .attr("stroke-width", this.getOption("strokeWidth"))
-          .attr("fill", "none");
+          this.svg
+            .append("path")
+            .classed(this.getOption("lineClass"), true)
+            .attr("d", lineFunction(lineData))
+            .attr("stroke", this.getOption("strokeColour"))
+            .attr("stroke-width", this.getOption("strokeWidth"))
+            .attr("fill", "none");
 
-        this.fromPoint = { x: point.x, y: point.y };
-      }
-    },
+          this.fromPoint = { x: point.x, y: point.y };
+        }
+      },
 
-    mouseLeave() {
-      this.clearAll();
-      this.creating = false;
-    },
-
-    mouseUp() {
-      if (this.creating) {
+      mouseLeave() {
+        this.clearAll();
         this.creating = false;
-        this.createPath(this.convertPointsToLatLngs(this.latLngs));
-        this.latLngs = [];
-        return;
-      }
+      },
 
-      if (this.edgeBeingChanged()) {
-        this.edgeBeingChanged().attachElbows();
-        this.edgeBeingChanged().finished();
-        this.edgeBeingChanged().manipulating = false;
+      mouseUp() {
+        if (this.creating) {
+          this.creating = false;
+          this.createPath(this.convertPointsToLatLngs(this.latLngs));
+          this.latLngs = [];
+          return;
+        }
+
+        if (this.edgeBeingChanged()) {
+          this.edgeBeingChanged().attachElbows();
+          this.edgeBeingChanged().finished();
+          this.edgeBeingChanged().manipulating = false;
+        }
       }
-    }
-  };
+    };
+  }
 
   createPath(latLngs) {
     if (latLngs.length <= 1) {
@@ -122,7 +125,7 @@ export default class Pather extends FeatureGroup {
 
     this.clearAll();
 
-    const polyline = new L.Pather.Polyline(this.map, latLngs, this.options, {
+    const polyline = new Polyline(this.map, latLngs, this.options, {
       fire: this.fire.bind(this),
       mode: this.getMode.bind(this),
       remove: this.removePath.bind(this)
@@ -139,7 +142,7 @@ export default class Pather extends FeatureGroup {
   }
 
   removePath(model) {
-    if (model instanceof L.Pather.Polyline) {
+    if (model instanceof Polyline) {
       const indexOf = this.polylines.indexOf(model);
       this.polylines.splice(indexOf, 1);
 
@@ -165,8 +168,7 @@ export default class Pather extends FeatureGroup {
     this.draggingState = map.dragging._enabled;
     this.map = map;
     this.fromPoint = { x: 0, y: 0 };
-    this.svg = d3
-      .select(element)
+    this.svg = select(element)
       .append("svg")
       .attr("pointer-events", "none")
       .attr("class", this.getOption("moduleClass"))
@@ -294,7 +296,7 @@ export default class Pather extends FeatureGroup {
       //   }
 
       //   return this.options.mode & MODES.CREATE;
-      this.options.mode & MODES.CREATE || this.options.mode & MODES.EDIT;
+      return this.options.mode & MODES.CREATE || this.options.mode & MODES.EDIT;
     };
 
     if (shouldDisableDrag()) {
