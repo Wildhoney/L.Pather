@@ -12,3 +12,4 @@ example/vendor/*
 dist/
 .r2-cache/
 .cache/
+.vscode/
