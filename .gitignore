@@ -8,3 +8,8 @@ npm-debug.log
 # Bower
 example/vendor/*
 !example/vendor/.gitkeep
+
+dist/
+.r2-cache/
+.cache/
+.vscode/

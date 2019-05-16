@@ -1,10 +1,10 @@
 /* Excuse the imports... */
-@import 'components/header.css';
-@import 'components/buttons.css';
-@import 'components/map.css';
+@import "./components/header.css";
+@import "./components/buttons.css";
+@import "./components/map.css";
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
