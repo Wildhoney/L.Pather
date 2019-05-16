@@ -11,11 +11,23 @@ module.exports = {
       // sourcemap: 'inline',
       exports: "named",
       external: ["leaflet"]
+    },
+    {
+      file: "dist/leaflet-pather.web.js",
+      format: "iife",
+      // sourcemap: 'inline',
+      name: "Pather",
+      exports: "named",
+      external: ["leaflet"]
     }
   ],
   plugins: [
     resolve(),
-    commonjs({}),
+    commonjs({
+      namedExports: {
+        "node_modules/leaflet/dist/leaflet-src.js": ["FeatureGroup"]
+      }
+    }),
     babel({
       exclude: "node_modules/**"
     })
